@@ -40,7 +40,7 @@ const Header: React.FC = () => {
                             </>
                         ) : (
                             <>
-                                <a href="/login" className="flex items-center text-gray-500 hover:text-indigo-600 transition">
+                                <a href="/register" className="flex items-center text-gray-500 hover:text-indigo-600 transition">
                                     <UserCircleIcon className="h-5 w-5 mr-1" />
                                     <span>כניסה / הרשמה</span>
                                 </a>
