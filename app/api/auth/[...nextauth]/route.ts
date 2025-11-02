@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
 
         if (user && bcrypt.compareSync(credentials.password, user.hashedPassword)) {
           return {
-            id: user._id.toString(),
+            id: user?._id.toString(),
             email: user.email,
             name: user.name,
             role: user.role,
