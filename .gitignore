@@ -24,4 +24,7 @@ dist-ssr
 *.sw?
 g
 .next/
+<<<<<<< HEAD
 
+=======
+>>>>>>> fbd4d08d4062efac481542d6be15c380c3629a7f
