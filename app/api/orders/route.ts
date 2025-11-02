@@ -8,11 +8,12 @@ import { authOptions } from '../auth/[...nextauth]/route';
 
 // GET orders (all for Admin, user's own for User)
 export async function GET(req: Request) {
-  const user = getAuthenticatedUser(req);
-  if (!user) {
+    const session = await getServerSession(authOptions);
+    const user = session?.user;
+  // const user = getAuthenticatedUser(req);
+  if(!user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
-
   try {
     await dbConnect();
     const query = user.role === Role.ADMIN ? {} : { userId: user.id };

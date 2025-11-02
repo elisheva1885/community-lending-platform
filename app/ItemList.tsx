@@ -11,7 +11,6 @@ const ItemList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const { data: session } = useSession();
-    const isAdmin = session?.user?.role === 'ADMIN';
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -76,7 +75,7 @@ const ItemList: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {filteredItems.length > 0 ? (
                     filteredItems.map(item => (
-                        <ItemCard key={item.id} item={item} isAdmin={isAdmin}/>
+                        <ItemCard key={item.id} item={item} />
                     ))
                 ) : (
                     <p className="text-center text-gray-500 col-span-full">לא נמצאו פריטים התואמים את החיפוש.</p>
