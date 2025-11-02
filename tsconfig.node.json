@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "ts-node": {
+    "transpileOnly": false,
+    "files": true,
+    "esm": true,
+    "compilerOptions": {
+      "module": "ESNext",
+      "moduleResolution": "Node"
+    }
+  }
+}
