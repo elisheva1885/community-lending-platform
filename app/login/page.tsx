@@ -1,7 +1,8 @@
 'use client';
-import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -9,8 +10,20 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()!;
+
     const callbackUrl = searchParams.get('callbackUrl') || '/';
+    const { data: session } = useSession(); // כאן יגיעו פרטי המשתמש אחרי התחברות
+    const { login } = useAuth();
+
+    useEffect(() => {
+        console.log('Session data:', session);
+        if (session) {
+            console.log('משתמש מחובר:', session.user);
+            console.log('ספק ההתחברות:', session.user?.provider);
+            login(session.user, "");
+        }
+    }, [session]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,7 +70,7 @@ export default function LoginPage() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password"className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                             סיסמה
                         </label>
                         <input
