@@ -1,5 +1,5 @@
 import { Schema, model, models, Document, Model } from 'mongoose';
-import { Role, IUser } from '../types';
+import { Role, IUser } from '../types.ts';
 
 const UserSchema = new Schema<IUser>({
   email: {
@@ -25,6 +25,7 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: [true, 'Please provide a password.'],
   },
+  gemachIds: [{ type: Schema.Types.ObjectId, ref: 'Gemach' }],
 }, {
   timestamps: true,
 });
