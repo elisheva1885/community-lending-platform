@@ -2,6 +2,8 @@ import dbConnect from '../../../../lib/dbConnect';
 import Item from '../../../../models/item.model';
 import { getAuthenticatedUser } from '../../../../lib/authUtils';
 import { Role } from '../../../../types';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 // This function is a workaround to get path params in this environment
 function getIDFromURL(url: string): string | null {
@@ -28,11 +30,15 @@ export async function GET(req: Request) {
 
 // PUT (update) an item by ID (Admin only)
 export async function PUT(req: Request) {
-    const user = getAuthenticatedUser(req);
-    if (!user || user.role !== Role.ADMIN) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
+     const session = await getServerSession(authOptions);
     
+      // 2️⃣ בדיקת הרשאה – רק מנהלים יכולים להוסיף פריטים
+      if (!session || session.user.role !== Role.ADMIN) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
     const id = getIDFromURL(req.url);
     if (!id) return new Response(JSON.stringify({ error: 'Missing item ID' }), { status: 400 });
 
@@ -51,10 +57,15 @@ export async function PUT(req: Request) {
 
 // DELETE an item by ID (Admin only)
 export async function DELETE(req: Request) {
-    const user = getAuthenticatedUser(req);
-    if (!user || user.role !== Role.ADMIN) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
+     const session = await getServerSession(authOptions);
+    
+      // 2️⃣ בדיקת הרשאה – רק מנהלים יכולים להוסיף פריטים
+      if (!session || session.user.role !== Role.ADMIN) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
     
     const id = getIDFromURL(req.url);
     if (!id) return new Response(JSON.stringify({ error: 'Missing item ID' }), { status: 400 });

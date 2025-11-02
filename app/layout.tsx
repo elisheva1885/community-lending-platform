@@ -4,7 +4,9 @@ import { Inter } from 'next/font/google';
 import Header from '../components/Header';
 import Providers from './providers';
 
-const inter = Inter({ subsets: ['latin'] });
+// const inter = Inter({ subsets: ['latin'] });
+const inter = { className: '' };
+
 
 export const metadata: Metadata = {
   title: 'גמ"ח 2.0 - מערכת ניהול מלאי',

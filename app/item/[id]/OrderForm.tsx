@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { Item, OrderStatus } from '../../../types';
-import { useAuth } from '../../../context/AuthContext';
+import { useSession } from 'next-auth/react';
 
 const OrderForm: React.FC<{ item: Item }> = ({ item }) => {
-    const { user, isAuthenticated, authFetch } = useAuth();
+    const { data: session, status } = useSession();
+    const isAuthenticated = status === 'authenticated';
+    const user = session?.user;
     const today = new Date().toISOString().split('T')[0];
     const [pickupDate, setPickupDate] = useState(today);
     const [returnDate, setReturnDate] = useState('');
@@ -21,18 +23,22 @@ const OrderForm: React.FC<{ item: Item }> = ({ item }) => {
             alert('תאריך ההחזרה חייב להיות מאוחר או שווה לתאריך האיסוף.');
         }
     };
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!isAuthenticated || !user) return;
         setIsLoading(true);
         setMessage(null);
-
-        const response = await authFetch('/api/orders', {
+        const token = session?.user?.token; // אם אתה מחזיר accessToken ב־JWT callback
+        const response = await fetch('/api/orders', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token ? `Bearer ${token}` : '',
+            },
             body: JSON.stringify({
                 itemId: item.id,
-                userId: user.id, // Use ID from auth context
+                userId: user?.id,
                 pickupDate,
                 returnDate,
                 status: OrderStatus.PENDING,

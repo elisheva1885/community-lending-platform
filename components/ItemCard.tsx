@@ -1,11 +1,10 @@
 import React from 'react';
 import { Item } from '../types';
-
 interface ItemCardProps {
   item: Item;
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
+const ItemCard: React.FC<{ item: Item; isAdmin: boolean }> = ({ item, isAdmin }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
       <img src={item.imageUrl} alt={item.name} className="w-full h-48 object-cover" />
