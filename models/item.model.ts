@@ -1,5 +1,6 @@
-import { Schema, model, models, Document, Model, Types } from 'mongoose';
-import { IItem, IDamageLog } from '../types';
+import mongoose from 'mongoose';
+import { IItem, IDamageLog } from '../types.ts';
+const { Schema, model, models, Document, Types } = mongoose;
 
 const DamageLogSchema = new Schema<IDamageLog>({
     date: { type: Date, required: true },
@@ -29,6 +30,7 @@ const ItemSchema = new Schema<IItem>({
     required: [true, 'Please provide an image URL.'],
   },
   damageLog: [DamageLogSchema],
+  gemachId: { type: Schema.Types.ObjectId, ref: 'Gemach', required: true },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
@@ -37,9 +39,9 @@ const ItemSchema = new Schema<IItem>({
 
 // Fix: Explicitly cast `this._id` to `Types.ObjectId` to resolve `toHexString` error.
 ItemSchema.virtual('id').get(function(){
-    return (this._id as Types.ObjectId).toHexString();
+    return (this._id as mongoose.Types.ObjectId).toHexString();
 });
 
 
 // Fix: Correctly type the exported model to prevent query method errors
-export default (models.Item as Model<IItem>) || model<IItem>('Item', ItemSchema);
+export default (models.Item as mongoose.Model<IItem>) || model<IItem>('Item', ItemSchema);
