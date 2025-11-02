@@ -41,7 +41,7 @@ const ManageOrders: React.FC = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, [fetchOrders]);
+    }, []);
     
     const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
         try {
