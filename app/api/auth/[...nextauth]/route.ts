@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
 
         if (user && bcrypt.compareSync(credentials.password, user.hashedPassword)) {
           return {
-            id: user?._id.toString(),
+            id: user._id.toString(),
             email: user.email,
             name: user.name,
             role: user.role,
@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
       }
+      console.log('token',token);
       return token;
     },
     session({ session, token }) {
