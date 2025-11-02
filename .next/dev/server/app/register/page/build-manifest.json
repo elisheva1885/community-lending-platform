@@ -2,20 +2,20 @@
   "devFiles": [],
   "ampDevFiles": [],
   "polyfillFiles": [
-    "static/chunks/node_modules_next_dist_build_polyfills_polyfill-nomodule.js"
+    "static/chunks/278b9_next_dist_build_polyfills_polyfill-nomodule.js"
   ],
   "lowPriorityFiles": [],
   "rootMainFiles": [
-    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_d62d378a._.js",
-    "static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js",
-    "static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_9212ccad._.js",
-    "static/chunks/node_modules_next_dist_compiled_next-devtools_index_1dd7fb59.js",
-    "static/chunks/node_modules_next_dist_compiled_a0e4c7b4._.js",
-    "static/chunks/node_modules_next_dist_client_a6ce9b62._.js",
-    "static/chunks/node_modules_next_dist_4b2403f5._.js",
-    "static/chunks/node_modules_@swc_helpers_cjs_d80fb378._.js",
-    "static/chunks/_a0ff3932._.js",
-    "static/chunks/turbopack-_376339a9._.js"
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_7558411f._.js",
+    "static/chunks/278b9_next_dist_compiled_react-dom_aa0b82c7._.js",
+    "static/chunks/278b9_next_dist_compiled_react-server-dom-turbopack_3020614e._.js",
+    "static/chunks/278b9_next_dist_compiled_next-devtools_index_7d7c77bf.js",
+    "static/chunks/278b9_next_dist_compiled_1d871a36._.js",
+    "static/chunks/278b9_next_dist_client_29d9be6c._.js",
+    "static/chunks/278b9_next_dist_b35b3556._.js",
+    "static/chunks/278b9_@swc_helpers_cjs_7ff20c0c._.js",
+    "static/chunks/Desktop_training_all lessons_Project-team_community-lending-platform_a0ff3932._.js",
+    "static/chunks/88e7d_training_all lessons_Project-team_community-lending-platform_7a02e7d7._.js"
   ],
   "pages": {},
   "ampFirstPages": []
