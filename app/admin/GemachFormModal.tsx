@@ -1,166 +1,187 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import { IGemach } from '../../types';
 
-interface GemachFormModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: (gemachData: Omit<IGemach, 'id'> & { managerId: string }) => void;
-    gemach: IGemach | null;
+interface User {
+  _id: string;
+  name: string;
+  email: string;
 }
 
-type FormData = Omit<IGemach, 'id'>;
+type GemachInput = {
+  name: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  managerId: string;
+};
 
-const GemachFormModal: React.FC<GemachFormModalProps> = ({ isOpen, onClose, onSave, gemach }) => {
-    const [formData, setFormData] = useState<FormData>({
-        name: '',
-        address: '',
-        phone: '',
-        email: '',
-        managerId: '',
-    });
-    const [isLoading, setIsLoading] = useState(false);
+interface GemachFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (gemachData: GemachInput) => Promise<void> | void;
+  gemach: IGemach | null;
+}
 
-    useEffect(() => {
-        if (gemach) {
-            setFormData({
-                name: gemach.name,
-                address: gemach.address,
-                phone: gemach.phone || '',
-                email: gemach.email || '',
-                managerId: typeof gemach.managerId === 'string'
-                    ? gemach.managerId
-                    : gemach.managerId._id,  // אם זה אובייקט משתמש, קח את ה־_id
-            });
-        } else {
-            setFormData({ name: '', address: '', phone: '', email: '', managerId: '' });
-        }
-    }, [gemach]);
+const GemachFormModal: React.FC<GemachFormModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  gemach,
+}) => {
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [managerId, setManagerId] = useState('');
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingUsers, setIsFetchingUsers] = useState(false);
 
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+  // שליפת המשתמשים לרשימת המנהלים
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsFetchingUsers(true);
+      try {
+        const res = await fetch('/api/users');
+        if (!res.ok) throw new Error('Failed to fetch users');
+        const data = await res.json();
+        setUsers(data);
+      } catch {
+        setError('שגיאה בשליפת רשימת המשתמשים');
+      } finally {
+        setIsFetchingUsers(false);
+      }
     };
+    fetchUsers();
+  }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        const payload = {
-            ...formData,
-            managerId: typeof formData.managerId === 'string'
-                ? formData.managerId
-                : formData.managerId._id, // במקרה שהוא אובייקט
-        };
+  // מילוי השדות בעת עריכה
+  useEffect(() => {
+    if (gemach) {
+      setName(gemach.name);
+      setAddress(gemach.address);
+      setPhone(gemach.phone || '');
+      setEmail(gemach.email || '');
+      setManagerId(
+        typeof gemach.managerId === 'string'
+          ? gemach.managerId
+          : gemach.managerId._id.toString()
+      );
+    } else {
+      setName('');
+      setAddress('');
+      setPhone('');
+      setEmail('');
+      setManagerId('');
+    }
+  }, [gemach]);
 
-        await onSave(payload);
-        setIsLoading(false);
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
-    if (!isOpen) return null;
+    try {
+      await onSave({
+        name,
+        address,
+        phone,
+        email,
+        managerId,
+      });
+    } catch {
+      setError('שגיאה בשמירת הנתונים');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-                <h2 className="text-2xl font-bold mb-4">
-                    {gemach ? 'עריכת גמ"ח' : 'הוספת גמ"ח חדש'}
-                </h2>
+  if (!isOpen) return null;
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                            שם הגמ"ח
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            id="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 w-full p-2 border rounded-md"
-                        />
-                    </div>
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          {gemach ? 'עריכת גמ"ח' : 'הוספת גמ"ח חדש'}
+        </h2>
 
-                    <div>
-                        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                            כתובת
-                        </label>
-                        <input
-                            type="text"
-                            name="address"
-                            id="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 w-full p-2 border rounded-md"
-                        />
-                    </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="שם הגמח\"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="border p-2 w-full rounded"
+          />
+          <input
+            type="text"
+            placeholder="כתובת"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            required
+            className="border p-2 w-full rounded"
+          />
+          <input
+            type="tel"
+            placeholder="טלפון"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="border p-2 w-full rounded"
+          />
+          <input
+            type="email"
+            placeholder="אימייל"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border p-2 w-full rounded"
+          />
 
-                    <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                            טלפון
-                        </label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            id="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className="mt-1 w-full p-2 border rounded-md"
-                        />
-                    </div>
+          <div>
+            <label className="block font-medium mb-1">מנהל גמ"ח</label>
+            {isFetchingUsers ? (
+              <p className="text-gray-500 text-sm">טוען רשימת משתמשים...</p>
+            ) : (
+              <select
+                value={managerId}
+                onChange={(e) => setManagerId(e.target.value)}
+                required
+                className="border p-2 w-full rounded"
+              >
+                <option value="">בחר מנהל</option>
+                {users.map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name} ({user.email})
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
 
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            אימייל
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="mt-1 w-full p-2 border rounded-md"
-                        />
-                    </div>
+          {error && <p className="text-red-600 text-center">{error}</p>}
 
-                    <div>
-                        <label htmlFor="managerId" className="block text-sm font-medium text-gray-700">
-                            מזהה מנהל (managerId)
-                        </label>
-                        <input
-                            type="text"
-                            name="managerId"
-                            id="managerId"
-                            value={formData.managerId}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 w-full p-2 border rounded-md"
-                        />
-                    </div>
-
-                    <div className="flex justify-end space-x-3 pt-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300"
-                        >
-                            ביטול
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400"
-                        >
-                            {isLoading ? 'שומר...' : 'שמור'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+          <div className="flex justify-end space-x-2 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border rounded"
+            >
+              ביטול
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-indigo-400"
+            >
+              {isLoading ? 'שומר...' : gemach ? 'שמור שינויים' : 'הוסף גמ"ח'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default GemachFormModal;
