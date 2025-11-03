@@ -4,6 +4,10 @@ import { Role } from '../../../types';
 import { getAuthenticatedUser } from '../../../lib/authUtils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
+import mongoose from 'mongoose';
+import { NextResponse } from 'next/server';
+import Gemach from '../../../models/gmach.model';
+
 
 // GET all items (publicly accessible)
 export async function GET(req: Request) {
@@ -34,6 +38,11 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" },
     });
   }
+  const userId = new mongoose.Types.ObjectId(session.user.id);
+  const gemach = await Gemach.findOne({ managerId: userId });
+  if (!gemach) {
+    return NextResponse.json({ error: 'No Gemach found for this manager' }, { status: 404 });
+  }
 
   try {
     // 3️⃣ התחברות למסד הנתונים
@@ -43,8 +52,10 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // 5️⃣ יצירת פריט חדש במסד הנתונים
-    const newItem = await Item.create(body);
-
+    const newItem = await Item.create({
+      ...body,
+      gemachId: gemach._id, // חובה להוסיף את זה
+    });
     // 6️⃣ החזרת התוצאה
     return new Response(JSON.stringify(newItem), {
       status: 201,

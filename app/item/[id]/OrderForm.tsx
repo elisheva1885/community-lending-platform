@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { Item, OrderStatus } from '../../../types';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const OrderForm: React.FC<{ item: Item }> = ({ item }) => {
+    const router = useRouter();
     const { data: session, status } = useSession();
     const isAuthenticated = status === 'authenticated';
     const user = session?.user;
@@ -47,9 +49,15 @@ const OrderForm: React.FC<{ item: Item }> = ({ item }) => {
 
         const data = await response.json();
 
-        if (response.ok) {
-            setMessage({ type: 'success', text: 'ההזמנה בוצעה בהצלחה! ניתן לראות אותה בעמוד "ההזמנות שלי".' });
-        } else {
+       if (response.ok) {
+    setMessage({ type: 'success', text: 'ההזמנה בוצעה בהצלחה! ניתן לראות אותה בעמוד "ההזמנות שלי".' });
+
+    // עיכוב קצר להצגת ההודעה (לא חובה)
+    setTimeout(() => {
+        router.push('/my-orders');
+    }, 1500);
+}
+ else {
             setMessage({ type: 'error', text: data.error || 'שגיאה בביצוע ההזמנה. הפריט כנראה לא זמין בתאריכים אלו.' });
         }
         setIsLoading(false);
