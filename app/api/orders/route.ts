@@ -8,10 +8,10 @@ import { authOptions } from '../auth/[...nextauth]/route';
 
 // GET orders (all for Admin, user's own for User)
 export async function GET(req: Request) {
-    const session = await getServerSession(authOptions);
-    const user = session?.user;
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
   // const user = getAuthenticatedUser(req);
-  if(!user) {
+  if (!user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
   try {
@@ -60,6 +60,7 @@ export async function POST(req: Request) {
       status: { $in: ['Pending', 'Active'] },
       pickupDate: { $lt: new Date(returnDate) },
       returnDate: { $gt: new Date(pickupDate) },
+      gemachId: item.gemachId,
     });
 
     if (conflictingOrders >= item.inventoryCount) {
@@ -71,6 +72,7 @@ export async function POST(req: Request) {
       itemId,
       pickupDate: new Date(pickupDate),
       returnDate: new Date(returnDate),
+      gemachId: item.gemachId,
     };
 
     const newOrder = await Order.create(newOrderData);
