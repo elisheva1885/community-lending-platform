@@ -24,12 +24,11 @@ const ManageOrders: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
-    const { authFetch } = useAuth();
 
-    const fetchOrders = useCallback(async () => {
+    const fetchOrders = async() => {
         setIsLoading(true);
         try {
-            const res = await authFetch('/api/orders');
+            const res = await fetch('/api/orders');
             if (!res.ok) throw new Error('Failed to fetch orders');
             const data: Order[] = await res.json();
             setOrders(data);
@@ -38,15 +37,15 @@ const ManageOrders: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [authFetch]);
+    }
 
     useEffect(() => {
         fetchOrders();
-    }, [fetchOrders]);
+    }, []);
     
     const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
         try {
-            const response = await authFetch(`/api/orders/${orderId}`, {
+            const response = await fetch(`/api/orders/${orderId}`, {
                 method: 'PUT',
                 body: JSON.stringify({ status: newStatus }),
             });

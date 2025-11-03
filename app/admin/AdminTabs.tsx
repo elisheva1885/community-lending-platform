@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import ManageItems from './ManageItems';
 import ManageOrders from './ManageOrders';
 import ManageUsers from './ManageUsers';
+import ManageGemachim from './ManageGemachim';
 
-type Tab = 'items' | 'orders' | 'users';
+type Tab = 'items' | 'orders' | 'users' | 'gemachim';
 
 const AdminTabs: React.FC = () => {
     const [activeTab, setActiveTab] = useState<Tab>('items');
@@ -18,6 +19,8 @@ const AdminTabs: React.FC = () => {
                 return <ManageOrders />;
             case 'users':
                 return <ManageUsers />;
+            case 'gemachim':
+                return <ManageGemachim/>;
             default:
                 return null;
         }
@@ -56,6 +59,16 @@ const AdminTabs: React.FC = () => {
                         } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
                     >
                         ניהול משתמשים
+                    </button>
+                     <button
+                        onClick={() => setActiveTab('gemachim')}
+                        className={`${
+                            activeTab === 'gemachim'
+                                ? 'border-indigo-500 text-indigo-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                    >
+                        ניהול גמחים
                     </button>
                 </nav>
             </div>

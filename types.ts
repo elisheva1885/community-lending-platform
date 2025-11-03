@@ -1,21 +1,31 @@
+// types.ts
 import { Document, Types } from 'mongoose';
-// Fix: Add imports for next-auth module augmentation
 import 'next-auth';
 import 'next-auth/jwt';
 
-export enum Role {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+//////////////////////
+// ENUMS
+//////////////////////
+export const Role = {
+  USER: 'user',
+  ADMIN: 'admin',
+} as const;
 
-export enum OrderStatus {
-  PENDING = 'Pending',
-  ACTIVE = 'Active',
-  RETURNED = 'Returned',
-  CANCELLED = 'Cancelled',
-}
+export type Role = typeof Role[keyof typeof Role];
 
-// The primary User interface for the application
+export const OrderStatus = {
+  PENDING: 'Pending',
+  ACTIVE: 'Active',
+  RETURNED: 'Returned',
+  CANCELLED: 'Cancelled',
+} as const;
+export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
+
+//////////////////////
+// MAIN INTERFACES
+//////////////////////
+
+// User interface for app usage
 export interface User {
   id: string;
   email: string;
@@ -24,15 +34,17 @@ export interface User {
   role: Role;
 }
 
+// DamageLog
 export interface DamageLog {
   _id?: string;
-  date: string; // Using string for serialization
+  date: string; // serialized
   description: string;
   reportedBy: string;
 }
 
+// Item
 export interface Item {
-  id:string;
+  id: string;
   name: string;
   category: string;
   inventoryCount: number;
@@ -40,56 +52,93 @@ export interface Item {
   damageLog: DamageLog[];
 }
 
+// Order
 export interface Order {
   id: string;
-  userId: string | User; // Can be populated
-  itemId: string | Item; // Can be populated
-  pickupDate: string; // Using string for serialization
-  returnDate: string; // Using string for serialization
+  userId: string | User; // can be populated
+  itemId: string | Item; // can be populated
+  pickupDate: string; // serialized
+  returnDate: string; // serialized
   status: OrderStatus;
-  createdAt: string; // Using string for serialization
+  createdAt: string;
 }
 
-// Mongoose Document interfaces
+// Gemach
+export interface Gemach {
+  id: string;
+  name: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  managerId: number | Types.ObjectId;
+}
+
+//////////////////////
+// MONGOOSE DOCUMENT INTERFACES
+//////////////////////
+
+// User document
 export interface IUser extends Document {
   email: string;
   name: string;
   phone: string;
   role: Role;
   hashedPassword?: string;
+  gemachIds?: Types.ObjectId[]; // אופציונלי, עבור ניהול מספר גמ"חים
 }
 
+// DamageLog document
 export interface IDamageLog extends Document {
-    date: Date;
-    description: string;
-    reportedBy: string;
+  date: Date;
+  description: string;
+  reportedBy: string;
 }
 
+// Item document
 export interface IItem extends Document {
-  id: string; // virtual getter
+  id: string; // virtual
   name: string;
   category: string;
   inventoryCount: number;
   imageUrl: string;
   damageLog: IDamageLog[];
+  gemachId: Types.ObjectId;
 }
 
+// Order document
 export interface IOrder extends Document {
-  id: string; // virtual getter
+  id: string; // virtual
   userId: Types.ObjectId;
   itemId: Types.ObjectId;
   pickupDate: Date;
   returnDate: Date;
   status: OrderStatus;
+  gemachId: Types.ObjectId;
 }
 
-// Fix: Add module augmentation for next-auth to include custom session properties.
+// Gemach document
+export interface IGemach extends Document {
+  name: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  managerId: Types.ObjectId;
+}
+
+//////////////////////
+// NEXT-AUTH AUGMENTATION
+//////////////////////
+// הסרה של השורה הזו:
+// import { DefaultSession } from 'next-auth';
+
 declare module 'next-auth' {
   interface Session {
     user: {
       id: string;
       role: Role;
-    } & DefaultSession['user'];
+      name?: string;
+      email?: string;
+    };
   }
 
   interface User {

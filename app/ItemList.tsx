@@ -3,19 +3,20 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Item } from '../types';
 import ItemCard from '../components/ItemCard';
 import { useAuth } from '../context/AuthContext';
+import { useSession } from 'next-auth/react';
 
 const ItemList: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const { authFetch } = useAuth();
+    const { data: session } = useSession();
 
     useEffect(() => {
         const fetchItems = async () => {
             setIsLoading(true);
             try {
-                const res = await authFetch('/api/items');
+                const res = await fetch('/api/items');
                 if (!res.ok) {
                     throw new Error('Failed to fetch items');
                 }
@@ -28,7 +29,7 @@ const ItemList: React.FC = () => {
             }
         };
         fetchItems();
-    }, [authFetch]);
+    }, []);
 
     const categories = useMemo(() => {
         if (!items) return ['all'];
@@ -77,7 +78,7 @@ const ItemList: React.FC = () => {
                         <ItemCard key={item.id} item={item} />
                     ))
                 ) : (
-                     <p className="text-center text-gray-500 col-span-full">לא נמצאו פריטים התואמים את החיפוש.</p>
+                    <p className="text-center text-gray-500 col-span-full">לא נמצאו פריטים התואמים את החיפוש.</p>
                 )}
             </div>
         </>

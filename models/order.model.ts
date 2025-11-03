@@ -1,5 +1,5 @@
 import { Schema, model, models, Document, Types, Model } from 'mongoose';
-import { OrderStatus, IOrder } from '../types';
+import { OrderStatus, IOrder } from '../types.ts';
 
 const OrderSchema = new Schema<IOrder>({
   userId: {
@@ -26,6 +26,8 @@ const OrderSchema = new Schema<IOrder>({
     default: OrderStatus.PENDING,
     index: true,
   },
+    gemachId: { type: Schema.Types.ObjectId, ref: 'Gemach', required: true },
+
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

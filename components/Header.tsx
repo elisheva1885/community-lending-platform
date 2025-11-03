@@ -10,13 +10,13 @@ const Header: React.FC = () => {
     const { data: session } = useSession();
 
 
-const handleLogout = () => {
-    logout();
+    const handleLogout = () => {
+        logout();
 
-    signOut({ redirect: false });
+        signOut({ redirect: false });
 
-    window.location.href = '/';
-};
+        window.location.href = '/';
+    };
 
     const displayUser = session?.user || user;
 
@@ -47,10 +47,24 @@ const handleLogout = () => {
                                 </button>
                             </>
                         ) : (
-                            <a href="/register" className="flex items-center text-gray-500 hover:text-indigo-600 transition">
-                                <UserCircleIcon className="h-5 w-5 mr-1" />
-                                <span>כניסה / הרשמה</span>
-                            </a>
+                            <>
+                                <a href="/register" className="flex items-center text-gray-500 hover:text-indigo-600 transition">
+                                    <UserCircleIcon className="h-5 w-5 mr-1" />
+                                    <span>כניסה / הרשמה</span>
+                                </a>
+                                {!displayUser && (
+                                    <div className="flex items-center space-x-4">
+                                        <a href="/login" className="flex items-center text-gray-500 hover:text-indigo-600 transition">
+                                            <UserCircleIcon className="h-5 w-5 mr-1" />
+                                            <span>כניסה</span>
+                                        </a>
+                                        <a href="/register" className="flex items-center text-gray-500 hover:text-indigo-600 transition">
+                                            <UserCircleIcon className="h-5 w-5 mr-1" />
+                                            <span>הרשמה</span>
+                                        </a>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

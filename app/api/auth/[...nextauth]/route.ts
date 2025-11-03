@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
       }
+      console.log('token',token);
       return token;
     },
     session({ session, token }) {
