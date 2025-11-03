@@ -53,3 +53,25 @@ export async function POST(req: NextRequest) {
     });
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    await dbConnect();
+
+    // שליפת כל הגמ"חים
+    const gemachim = await GemachModel.find()
+      .populate('managerId', '_id name email') // מביא גם את פרטי המנהל
+      .sort({ createdAt: -1 }); // אפשר למיין לפי תאריך יצירה
+
+    return new Response(JSON.stringify(gemachim), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error(err);
+    return new Response(JSON.stringify({ error: 'Server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
